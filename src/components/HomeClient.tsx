@@ -14,7 +14,7 @@ import { BrandsSection } from "./BrandsSection";
 import { TopVideos } from "./TopVideos";
 import { ClientWorks } from "./ClientWorks";
 import { StatsDashboard } from "./StatsDashboard";
-import { CommentsSection } from "./CommentsSection";
+import { TeamSection } from "./TeamSection";
 import { AboutSection } from "./AboutSection";
 import { ContactSection } from "./ContactSection";
 
@@ -49,7 +49,7 @@ function HomeContent() {
         <TopVideos />
         <ClientWorks />
         <StatsDashboard />
-        <CommentsSection />
+        <TeamSection />
         <AboutSection />
         <ContactSection />
       </main>

@@ -19,6 +19,7 @@ import { useAdminContent } from "@/contexts/AdminContentContext";
 import { useToast } from "@/contexts/ToastContext";
 import { useAdminItemEditor } from "@/hooks/useAdminDraft";
 import { newId, uploadFile } from "@/lib/firebase/content-service";
+import { getVideoThumbnailUrl } from "@/lib/video-url";
 import type { VideoItem } from "@/lib/firebase/types";
 
 const emptyVideo = (): VideoItem => ({
@@ -95,8 +96,7 @@ export default function VideosManagerPage() {
     }
   };
 
-  const thumb = (v: VideoItem) =>
-    v.thumbUrl || `https://picsum.photos/seed/${v.thumbSeed}/200/120`;
+  const thumb = (v: VideoItem) => getVideoThumbnailUrl(v);
 
   return (
     <div>
@@ -133,7 +133,7 @@ export default function VideosManagerPage() {
                             <GripVertical className="h-4 w-4" />
                           </span>
                           <div className="relative h-10 w-16 shrink-0 overflow-hidden rounded-lg">
-                            <Image src={thumb(v)} alt="" fill className="object-cover" unoptimized />
+                            <Image src={thumb(v)} alt="" fill className="object-cover" unoptimized={thumb(v).startsWith("http")} />
                           </div>
                           <span className="min-w-0 flex-1 truncate text-xs text-white/75">{v.title}</span>
                           {v.pinned && <Pin className="h-3 w-3 shrink-0 text-cyan-400" />}
@@ -167,20 +167,33 @@ export default function VideosManagerPage() {
                 />
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Views">
-                  <AdminInput
-                    type="number"
-                    value={selected.views}
-                    onChange={(e) => setSelected({ ...selected, views: Number(e.target.value) })}
-                  />
-                </Field>
-                <Field label="Likes">
-                  <AdminInput
-                    type="number"
-                    value={selected.likes}
-                    onChange={(e) => setSelected({ ...selected, likes: Number(e.target.value) })}
-                  />
-                </Field>
+                {selected.videoUrl?.includes("instagram.com") ? (
+                  <Field
+                    label="Statistika"
+                    hint="Instagram videolar uchun ko‘rishlar va layklar avtomatik yuklanadi — bu yerda tahrirlash shart emas."
+                  >
+                    <p className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white/55">
+                      Oblojka, layklar va (mumkin bo‘lsa) ko‘rishlar Instagram’dan olinadi.
+                    </p>
+                  </Field>
+                ) : (
+                  <>
+                    <Field label="Views">
+                      <AdminInput
+                        type="number"
+                        value={selected.views}
+                        onChange={(e) => setSelected({ ...selected, views: Number(e.target.value) })}
+                      />
+                    </Field>
+                    <Field label="Likes">
+                      <AdminInput
+                        type="number"
+                        value={selected.likes}
+                        onChange={(e) => setSelected({ ...selected, likes: Number(e.target.value) })}
+                      />
+                    </Field>
+                  </>
+                )}
               </div>
               <Field label="Category">
                 <AdminInput
@@ -195,7 +208,14 @@ export default function VideosManagerPage() {
                   onChange={(e) => setSelected({ ...selected, uploadedAt: e.target.value })}
                 />
               </Field>
-              <Field label="Thumbnail">
+              <Field label="Video link (Instagram / YouTube)" hint="instagram.com/reel yoki youtube.com — oblojka avtomatik">
+                <AdminInput
+                  value={selected.videoUrl ?? ""}
+                  onChange={(e) => setSelected({ ...selected, videoUrl: e.target.value })}
+                  placeholder="https://www.youtube.com/watch?v=..."
+                />
+              </Field>
+              <Field label="Thumbnail (ixtiyoriy — bo‘sh qoldirsangiz linkdan olinadi)">
                 <input
                   type="file"
                   accept="image/*"

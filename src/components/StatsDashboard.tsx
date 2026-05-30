@@ -62,7 +62,7 @@ export function StatsDashboard() {
                   <div className="pointer-events-none absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-fuchsia-500/10 blur-2xl opacity-70" />
                   <p className="text-[11px] font-mono uppercase tracking-widest text-white/45">{s.label}</p>
                   <p className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
-                    <AnimatedCounter value={s.value} suffix={s.suffix} prefix={s.prefix} />
+                    <AnimatedCounter value={s.value} suffix={s.suffix} prefix={s.prefix} delay={idx * 0.15} />
                   </p>
                   <div className="mt-4 flex gap-1">
                     {Array.from({ length: 12 }).map((_, i) => (

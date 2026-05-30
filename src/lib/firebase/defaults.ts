@@ -1,10 +1,14 @@
 import {
-  brands,
   dashboardStats,
   socialLinks,
   topVideos,
   videoComments,
 } from "@/data/content";
+import {
+  instagramBrandSeeds,
+  instagramHandleToFile,
+  instagramProfileUrl,
+} from "@/data/instagram-brands";
 import type {
   AnalyticsData,
   BrandItem,
@@ -128,17 +132,19 @@ export const defaultVideos: VideoItem[] = topVideos.map((v, i) => ({
   uploadedAt: v.uploadedAt,
   thumbUrl: "",
   thumbSeed: v.thumbSeed,
+  videoUrl: v.videoUrl ?? "",
   category: "Featured",
   featured: i < 3,
   pinned: i === 0,
   order: i,
 }));
 
-export const defaultBrands: BrandItem[] = brands.map((b, i) => ({
-  id: `brand-${i}`,
-  name: b.name,
+export const defaultBrands: BrandItem[] = instagramBrandSeeds.map((b, i) => ({
+  id: `brand-${instagramHandleToFile(b.handle)}`,
+  name: `@${b.handle}`,
   tone: b.tone,
-  logoUrl: "",
+  logoUrl: `/brands/${instagramHandleToFile(b.handle)}.png`,
+  instagramUrl: instagramProfileUrl(b.handle),
   order: i,
 }));
 

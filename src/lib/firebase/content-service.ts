@@ -30,6 +30,7 @@ import type {
   MediaItem,
   SiteConfigDoc,
   SiteContent,
+  StatItem,
   VideoItem,
 } from "./types";
 
@@ -109,6 +110,91 @@ export async function fetchSiteContent(): Promise<SiteContent> {
   };
 }
 
+function needsBrandReseed(items: BrandItem[]): boolean {
+  if (items.length !== defaultBrands.length) return true;
+  return defaultBrands.some((expected) => {
+    const found = items.find((b) => b.id === expected.id);
+    return !found || found.logoUrl !== expected.logoUrl || found.name !== expected.name;
+  });
+}
+
+async function migrateLegacyBrands(items: BrandItem[]): Promise<BrandItem[]> {
+  if (!needsBrandReseed(items)) return items;
+
+  try {
+    const firestore = requireDb();
+    const batch = writeBatch(firestore);
+    const existing = await getDocs(collection(firestore, COLLECTIONS.brands));
+    existing.docs.forEach((d) => batch.delete(d.ref));
+    defaultBrands.forEach((b) => {
+      batch.set(doc(firestore, COLLECTIONS.brands, b.id), b);
+    });
+    await batch.commit();
+  } catch {
+    /* offline — render bundled defaults locally */
+  }
+
+  return defaultBrands;
+}
+
+function needsVideoReseed(items: VideoItem[]): boolean {
+  if (items.length !== defaultVideos.length) return true;
+  return defaultVideos.some((expected) => {
+    const found = items.find((v) => v.id === expected.id);
+    return !found || found.videoUrl !== expected.videoUrl || found.views !== expected.views;
+  });
+}
+
+async function migrateLegacyVideos(items: VideoItem[]): Promise<VideoItem[]> {
+  if (!needsVideoReseed(items)) return items;
+
+  try {
+    const firestore = requireDb();
+    const batch = writeBatch(firestore);
+    const existing = await getDocs(collection(firestore, COLLECTIONS.videos));
+    existing.docs.forEach((d) => batch.delete(d.ref));
+    defaultVideos.forEach((v) => {
+      batch.set(doc(firestore, COLLECTIONS.videos, v.id), v);
+    });
+    await batch.commit();
+  } catch {
+    /* offline — render bundled defaults locally */
+  }
+
+  return defaultVideos;
+}
+
+function needsStatsMigration(stats: StatItem[]): boolean {
+  const expected = defaultConfig.stats;
+  if (stats.length !== expected.length) return true;
+  return expected.some((item) => {
+    const found = stats.find((s) => s.key === item.key);
+    return !found || found.value !== item.value || found.suffix !== item.suffix || found.label !== item.label;
+  });
+}
+
+async function migrateLegacyStats(stats: StatItem[]): Promise<StatItem[]> {
+  if (!needsStatsMigration(stats)) return stats;
+
+  try {
+    const firestore = requireDb();
+    const configRef = doc(firestore, COLLECTIONS.config, DOC_IDS.main);
+    const snap = await getDoc(configRef);
+    if (snap.exists()) {
+      const config = snap.data() as SiteConfigDoc;
+      await setDoc(configRef, {
+        ...config,
+        stats: defaultConfig.stats,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+  } catch {
+    /* offline — render bundled defaults locally */
+  }
+
+  return defaultConfig.stats;
+}
+
 export function subscribeSiteContent(onData: (content: SiteContent) => void): Unsubscribe {
   if (!isFirebaseConfigured() || !initializeFirebase()) {
     onData({
@@ -143,8 +229,12 @@ export function subscribeSiteContent(onData: (content: SiteContent) => void): Un
     emitTimer = setTimeout(() => onData(payload), 150);
   };
 
-  const unsubConfig = onSnapshot(doc(firestore, COLLECTIONS.config, DOC_IDS.main), (snap) => {
-    if (snap.exists()) config = snap.data() as SiteConfigDoc;
+  const unsubConfig = onSnapshot(doc(firestore, COLLECTIONS.config, DOC_IDS.main), async (snap) => {
+    if (snap.exists()) {
+      const loaded = snap.data() as SiteConfigDoc;
+      const stats = await migrateLegacyStats(loaded.stats);
+      config = { ...loaded, stats };
+    }
     emit();
   });
 
@@ -155,16 +245,18 @@ export function subscribeSiteContent(onData: (content: SiteContent) => void): Un
 
   const unsubVideos = onSnapshot(
     query(collection(firestore, COLLECTIONS.videos), orderBy("order", "asc")),
-    (snap) => {
-      videos = snap.docs.map((d) => d.data() as VideoItem);
+    async (snap) => {
+      const loaded = snap.docs.map((d) => d.data() as VideoItem);
+      videos = await migrateLegacyVideos(loaded);
       emit();
     },
   );
 
   const unsubBrands = onSnapshot(
     query(collection(firestore, COLLECTIONS.brands), orderBy("order", "asc")),
-    (snap) => {
-      brands = snap.docs.map((d) => d.data() as BrandItem);
+    async (snap) => {
+      const loaded = snap.docs.map((d) => d.data() as BrandItem);
+      brands = await migrateLegacyBrands(loaded);
       emit();
     },
   );

@@ -1,12 +1,7 @@
 "use client";
 
+import { animate, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import {
-  useInView,
-  useMotionValue,
-  useMotionValueEvent,
-  useSpring,
-} from "framer-motion";
 import { formatNumber } from "@/lib/format";
 import { useMounted } from "@/hooks/useMounted";
 
@@ -14,39 +9,39 @@ type Props = {
   value: number;
   suffix?: string;
   prefix?: string;
+  /** Sekin count-up — kartochkalar ketma-ket boshlanadi */
+  delay?: number;
 };
 
-export function AnimatedCounter({ value, suffix = "", prefix = "" }: Props) {
+export function AnimatedCounter({ value, suffix = "", prefix = "", delay = 0 }: Props) {
   const ref = useRef<HTMLSpanElement>(null);
   const mounted = useMounted();
-  const inView = useInView(ref, { once: true, margin: "-12%" });
-  const mv = useMotionValue(0);
-  const spring = useSpring(mv, { stiffness: 48, damping: 22, mass: 0.45 });
-
-  const staticText = formatNumber(value);
-  const [text, setText] = useState(staticText);
-  const shouldAnimate = mounted && inView;
+  const inView = useInView(ref, { once: true, margin: "-8%" });
+  const hasAnimated = useRef(false);
+  const [display, setDisplay] = useState(0);
 
   useEffect(() => {
-    setText(formatNumber(value));
-    if (!shouldAnimate) {
-      mv.set(0);
-      return;
-    }
-    mv.set(value);
-  }, [value, shouldAnimate, mv]);
+    if (!mounted || !inView || hasAnimated.current) return;
 
-  useMotionValueEvent(spring, "change", (latest) => {
-    if (!shouldAnimate) return;
-    setText(formatNumber(Math.round(latest)));
-  });
+    hasAnimated.current = true;
+    setDisplay(0);
 
-  const display = shouldAnimate ? text : staticText;
+    const controls = animate(0, value, {
+      duration: 2.6,
+      delay,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (latest) => setDisplay(Math.round(latest)),
+    });
+
+    return () => controls.stop();
+  }, [mounted, inView, value, delay]);
+
+  const shown = mounted && inView ? display : 0;
 
   return (
     <span ref={ref} className="tabular-nums tracking-tight" suppressHydrationWarning>
       {prefix}
-      {display}
+      {formatNumber(shown)}
       {suffix}
     </span>
   );

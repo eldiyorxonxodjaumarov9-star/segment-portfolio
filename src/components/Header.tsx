@@ -16,7 +16,7 @@ const nav = [
   { href: "#videos", label: "Top videolar" },
   { href: "#works", label: "Zakazlar" },
   { href: "#stats", label: "Statistika" },
-  { href: "#comments", label: "Izohlar" },
+  { href: "#team", label: "Jamoa" },
   { href: "#about", label: "Men haqimda" },
   { href: "#contact", label: "Bog‘lanish" },
 ];
