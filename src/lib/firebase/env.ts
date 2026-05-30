@@ -1,4 +1,7 @@
 import { FIREBASE_PUBLIC_ENV } from "./public-env";
+import { SESSION_COOKIE_NAME, SESSION_MAX_AGE_MS } from "@/lib/auth/constants";
+
+export { SESSION_COOKIE_NAME, SESSION_MAX_AGE_MS };
 
 export const FIREBASE_PUBLIC_ENV_KEYS = [
   "NEXT_PUBLIC_FIREBASE_API_KEY",
@@ -120,9 +123,6 @@ export function getAdminServiceAccount() {
 
   return { projectId, clientEmail, privateKey };
 }
-
-export const SESSION_COOKIE_NAME = "__segment_admin_session";
-export const SESSION_MAX_AGE_MS = 60 * 60 * 24 * 5 * 1000;
 
 /** Absolute path hint for error UI (client-safe string) */
 export const ENV_FILE_HINT = "web/.env.local";

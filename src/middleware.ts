@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { SESSION_COOKIE_NAME } from "@/lib/auth/session";
+import { SESSION_COOKIE_NAME } from "@/lib/auth/constants";
 
 const ADMIN_LOGIN = "/admin/login";
 const ADMIN_DASHBOARD = "/admin/dashboard";

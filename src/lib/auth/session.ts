@@ -1,4 +1,5 @@
-import { SESSION_COOKIE_NAME, SESSION_MAX_AGE_MS, getAdminServiceAccount } from "@/lib/firebase/env";
+import { SESSION_COOKIE_NAME, SESSION_MAX_AGE_MS } from "@/lib/auth/constants";
+import { getAdminServiceAccount } from "@/lib/firebase/env";
 
 export { SESSION_COOKIE_NAME, SESSION_MAX_AGE_MS };
 
