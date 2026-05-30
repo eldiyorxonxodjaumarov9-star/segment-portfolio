@@ -1,30 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export function MouseGlow() {
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  const [ready, setReady] = useState(false);
+  const glowRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef(0);
 
   useEffect(() => {
+    const glow = glowRef.current;
+    if (!glow) return;
+
     const onMove = (e: MouseEvent) => {
-      setPos({ x: e.clientX, y: e.clientY });
-      setReady(true);
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        glow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+      });
     };
+
     window.addEventListener("mousemove", onMove, { passive: true });
-    return () => window.removeEventListener("mousemove", onMove);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
-  if (!ready) return null;
-
   return (
-    <div
-      className="pointer-events-none fixed inset-0 z-[5] mix-blend-screen"
-      aria-hidden
-    >
+    <div className="pointer-events-none fixed inset-0 z-[5]" aria-hidden>
       <div
-        className="absolute h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.14),rgba(168,85,247,0.06)_40%,transparent_68%)] blur-2xl transition-transform duration-100 ease-out"
-        style={{ left: pos.x, top: pos.y }}
+        ref={glowRef}
+        className="absolute left-0 top-0 h-[360px] w-[360px] rounded-full bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.12),rgba(168,85,247,0.05)_40%,transparent_68%)] blur-2xl will-change-transform"
       />
     </div>
   );

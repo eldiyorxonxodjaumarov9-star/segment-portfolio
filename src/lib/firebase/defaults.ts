@@ -103,7 +103,7 @@ export const defaultConfig: SiteConfigDoc = {
     neonSecondary: "#c084fc",
     backgroundColor: "#030308",
     gradientOverlay:
-      "radial-gradient(ellipse 80% 50% at 50% -20%,rgba(168,85,247,0.22),transparent),radial-gradient(ellipse 60% 40% at 80% 40%,rgba(34,211,238,0.12),transparent)",
+      "radial-gradient(ellipse 90% 55% at 50% -15%, rgba(168, 85, 247, 0.28), transparent 55%), radial-gradient(ellipse 55% 45% at 85% 35%, rgba(34, 211, 238, 0.16), transparent 50%), radial-gradient(ellipse 50% 40% at 10% 70%, rgba(192, 132, 252, 0.12), transparent 55%), radial-gradient(ellipse 70% 50% at 50% 100%, rgba(34, 211, 238, 0.08), transparent 60%)",
     animationsEnabled: true,
     particlesEnabled: true,
     mouseGlowEnabled: true,

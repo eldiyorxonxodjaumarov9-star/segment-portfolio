@@ -30,7 +30,7 @@ export function Header() {
       initial={{ y: -16, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed left-0 right-0 top-0 z-50 border-b border-white/[0.06] bg-[#030308]/65 backdrop-blur-2xl"
+      className="fixed left-0 right-0 top-0 z-50 border-b border-white/[0.06] bg-[#030308]/40 backdrop-blur-2xl"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <Link href="#hero" className="group flex items-center gap-1 outline-none">

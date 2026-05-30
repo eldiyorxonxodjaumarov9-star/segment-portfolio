@@ -93,12 +93,10 @@ export function BrandsSection() {
   const { content } = useSiteContent();
   const brands = [...content.brands].sort((a, b) => a.order - b.order);
   const row = brands.length ? [...brands, ...brands, ...brands] : [];
-  const carouselDuration = Math.max(brands.length * 12, 180);
+  const carouselDuration = Math.max(brands.length * 2.5, 45);
 
   return (
-    <section id="brands" className="relative overflow-hidden border-y border-white/[0.06] bg-[#030308] py-20 sm:py-24">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(34,211,238,0.07),transparent)]" />
-
+    <section id="brands" className="relative overflow-hidden py-20 sm:py-24">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -118,25 +116,15 @@ export function BrandsSection() {
           </div>
         ) : (
           <div className="relative -mx-4 sm:-mx-6 lg:-mx-8">
-            <div
-              className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-[#030308] to-transparent sm:w-20 lg:w-32"
-              aria-hidden
-            />
-            <div
-              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-[#030308] to-transparent sm:w-20 lg:w-32"
-              aria-hidden
-            />
-
-            <div className="overflow-hidden py-2">
-              <motion.div
-                className="flex w-max gap-5 px-4 sm:gap-6 sm:px-6 lg:gap-7 lg:px-8"
-                animate={{ x: ["0%", "-33.333%"] }}
-                transition={{ repeat: Infinity, duration: carouselDuration, ease: "linear" }}
+            <div className="overflow-hidden py-2 [mask-image:linear-gradient(to_right,transparent_0%,black_10%,black_90%,transparent_100%)]">
+              <div
+                className="brands-carousel-track flex w-max gap-5 px-4 sm:gap-6 sm:px-6 lg:gap-7 lg:px-8"
+                style={{ animationDuration: `${carouselDuration}s` }}
               >
                 {row.map((b, i) => (
                   <InstagramCard key={`${b.id}-${i}`} brand={b} />
                 ))}
-              </motion.div>
+              </div>
             </div>
           </div>
         )}

@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { SiteContentProvider, useSiteContent } from "@/contexts/SiteContentContext";
 import { useMounted } from "@/hooks/useMounted";
+import { PremiumBackground } from "./PremiumBackground";
+import { ScrollRevealSection } from "./ScrollRevealSection";
 import { ThemeApplier } from "./ThemeApplier";
 import { LoadingScreen } from "./LoadingScreen";
 import { ScrollProgress } from "./ScrollProgress";
@@ -33,10 +35,9 @@ function HomeContent() {
   const showLoader = mounted && loading;
 
   return (
-    <div
-      className="relative min-h-screen overflow-x-hidden text-white"
-      style={{ background: theme.backgroundColor }}
-    >
+    <div className="relative min-h-screen overflow-x-hidden text-white">
+      <PremiumBackground />
+      <div className="relative z-10">
       <ThemeApplier />
       <ScrollProgress />
       {mounted && theme.mouseGlowEnabled && <MouseGlow />}
@@ -45,14 +46,29 @@ function HomeContent() {
       <Header />
       <main>
         <Hero />
-        <BrandsSection />
-        <TopVideos />
-        <ClientWorks />
-        <StatsDashboard />
-        <TeamSection />
-        <AboutSection />
-        <ContactSection />
+        <ScrollRevealSection from="left">
+          <BrandsSection />
+        </ScrollRevealSection>
+        <ScrollRevealSection from="right">
+          <TopVideos />
+        </ScrollRevealSection>
+        <ScrollRevealSection from="bottom">
+          <ClientWorks />
+        </ScrollRevealSection>
+        <ScrollRevealSection from="top">
+          <StatsDashboard />
+        </ScrollRevealSection>
+        <ScrollRevealSection from="left" delay={0.05}>
+          <TeamSection />
+        </ScrollRevealSection>
+        <ScrollRevealSection from="right">
+          <AboutSection />
+        </ScrollRevealSection>
+        <ScrollRevealSection from="bottom">
+          <ContactSection />
+        </ScrollRevealSection>
       </main>
+      </div>
     </div>
   );
 }
