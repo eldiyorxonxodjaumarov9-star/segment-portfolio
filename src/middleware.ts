@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { SESSION_COOKIE_NAME } from "@/lib/auth/constants";
+
+/** Keep in sync with @/lib/auth/constants — inlined for Edge middleware bundle */
+const SESSION_COOKIE_NAME = "__segment_admin_session";
 
 const ADMIN_LOGIN = "/admin/login";
 const ADMIN_DASHBOARD = "/admin/dashboard";
