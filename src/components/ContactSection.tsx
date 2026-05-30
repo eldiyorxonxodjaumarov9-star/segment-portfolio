@@ -88,7 +88,11 @@ export function ContactSection() {
         </motion.div>
 
         <p className="mt-10 text-center text-[11px] text-white/35">
-          © <CopyrightYear /> AI SEGMENT — barcha vizual kontseptlar himoyalangan.
+          © <CopyrightYear /> AI SEGMENT — Premium Portfolio
+          <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-cyan-400/25 bg-cyan-400/10 px-2 py-0.5 text-[10px] text-cyan-300/90">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            Live
+          </span>
         </p>
       </div>
     </section>
