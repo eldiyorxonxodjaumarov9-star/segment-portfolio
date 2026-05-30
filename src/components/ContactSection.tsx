@@ -91,7 +91,7 @@ export function ContactSection() {
           © <CopyrightYear /> AI SEGMENT — Premium Portfolio
           <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-cyan-400/25 bg-cyan-400/10 px-2 py-0.5 text-[10px] text-cyan-300/90">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            Live
+            Live — v2
           </span>
         </p>
       </div>
